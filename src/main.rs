@@ -1,13 +1,13 @@
 use std::{
     io::Write,
     net::IpAddr,
+    thread::sleep,
     time::{Duration, SystemTime},
 };
 
 use chrono::Local;
 use mpris::PlayerFinder;
 use serde::Serialize;
-use tokio::time::sleep;
 
 #[derive(Default, Debug, Serialize)]
 struct Header {
@@ -65,8 +65,7 @@ struct Body {
     markup: Option<String>,
 }
 
-#[tokio::main(flavor = "current_thread")]
-async fn main() -> std::io::Result<()> {
+fn main() -> std::io::Result<()> {
     let player_finder = PlayerFinder::new().unwrap();
     let header = Header {
         version: 1,
@@ -122,9 +121,9 @@ async fn main() -> std::io::Result<()> {
             ..Default::default()
         });
 
-        write!(stdout, ",")?;
+        stdout.write_all(&[b','])?;
         serde_json::to_writer(&mut stdout, &body)?;
-        write!(stdout, "\n")?;
+        stdout.write_all(&[b'\n'])?;
         stdout.flush()?;
 
         let time_since_the_epoch = SystemTime::now()
@@ -132,6 +131,6 @@ async fn main() -> std::io::Result<()> {
             .unwrap();
         let time_until_next_second =
             Duration::new(1, 0) - Duration::new(0, time_since_the_epoch.subsec_nanos());
-        sleep(time_until_next_second).await;
+        sleep(time_until_next_second);
     }
 }
