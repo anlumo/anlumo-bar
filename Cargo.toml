@@ -1,0 +1,17 @@
+[package]
+name = "anlumo-bar"
+version = "0.1.0"
+edition = "2021"
+
+[profile.release]
+strip = true  # Automatically strip symbols from the binary.
+lto = true
+panic = "abort"
+
+[dependencies]
+chrono = { version = "0.4.24", features = ["serde", "clock"] }
+mpris = "2.0.0"
+pnet = "0.33.0"
+serde = { version = "1.0.162", features = ["serde_derive"] }
+serde_json = "1.0.96"
+tokio = { version = "1.28.0", features = ["rt", "macros", "time"] }
